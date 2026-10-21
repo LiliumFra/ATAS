@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7
-FROM node:24.18.0-alpine AS dependencies
+FROM node:26.12.0-alpine AS dependencies
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts
@@ -11,12 +11,12 @@ COPY scripts ./scripts
 COPY rulesets ./rulesets
 RUN npm run build
 
-FROM node:24.18.0-alpine AS production-dependencies
+FROM node:26.12.0-alpine AS production-dependencies
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
-FROM node:24.18.0-alpine AS runtime
+FROM node:26.12.0-alpine AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
 RUN apk add --no-cache tini \
