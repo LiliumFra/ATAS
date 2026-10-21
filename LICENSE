@@ -1,0 +1,94 @@
+ATAS ATTRIBUTION LICENSE 1.0
+
+Copyright (c) 2026 José Francisco Bustamante Ocampo and ATAS contributors
+All rights reserved subject to the permissions below.
+
+1. Permission Grant
+
+Permission is hereby granted, free of charge, to any person or legal entity obtaining
+a copy of ATAS — Added Time Assistance System (the "Software") to use, copy,
+modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+and to permit persons to whom the Software is furnished to do so, subject to all
+conditions of this License.
+
+2. Mandatory Attribution
+
+Any use, deployment, redistribution, publication, demonstration, integration,
+derivative work, or service that incorporates or materially depends on the Software
+must provide clear attribution to the original project and author.
+
+The attribution must contain, at minimum:
+
+  "ATAS — Added Time Assistance System. Created by José Francisco Bustamante
+  Ocampo. Copyright 2026 José Francisco Bustamante Ocampo and ATAS contributors."
+
+The attribution must not be removed, obscured, or presented in a manner that is
+reasonably likely to make the authorship unclear.
+
+3. User-Facing Deployments
+
+If the Software or a derivative work has a graphical, web, mobile, command-line, or
+other user-facing interface, the attribution required by Section 2 must be displayed
+in a reasonably accessible location such as an About, Credits, Legal, System
+Information, acknowledgements screen, startup banner, or equivalent location.
+
+The attribution need not interfere with ordinary operation and need not appear on
+every screen.
+
+4. Headless, Embedded, API, and Internal Deployments
+
+If no user-facing interface exists, the attribution required by Section 2 must be
+included in the operator documentation and in at least one reasonably discoverable
+machine or runtime surface, such as startup output, a legal/about endpoint, generated
+documentation, or equivalent system information.
+
+5. Source and Binary Redistribution
+
+Redistributions of source code must retain this License, the copyright notice, the
+NOTICE file, and the attribution requirements.
+
+Redistributions in binary, container, appliance, hosted, or other non-source form
+must reproduce this License or a link to the complete License and must preserve the
+NOTICE and attribution in accompanying documentation or another reasonably
+accessible legal/credits location.
+
+6. Modified and Derivative Works
+
+Modified files or derivative works must clearly state that they have been modified
+from ATAS. Rebranding does not remove the attribution obligation. A derivative work
+may identify its own authors in addition to, but not instead of, the attribution
+required by Section 2.
+
+7. No Endorsement or Trademark Rights
+
+This License does not grant permission to use the names, logos, trademarks, or trade
+names of José Francisco Bustamante Ocampo, ATAS contributors, FIFA, The IFAB, or any
+other third party to imply sponsorship, endorsement, certification, or affiliation.
+Accurate attribution required by this License is permitted.
+
+8. Third-Party Components
+
+Third-party components bundled with or used by the Software remain subject to their
+respective licenses. Nothing in this License changes those third-party terms.
+
+9. Termination
+
+The permissions granted by this License terminate automatically upon material breach
+of its conditions. Permissions are reinstated prospectively if the breach is cured
+within 30 days after discovery, unless the copyright holder has provided written
+notice of termination that remains unresolved.
+
+10. Disclaimer of Warranty
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT
+HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+11. Identification
+
+This license may be referenced as "ATAS Attribution License 1.0" or
+"LicenseRef-ATAS-Attribution-1.0". It is a project-specific license and is not the
+Apache License 2.0 or an OSI-approved SPDX license identifier.

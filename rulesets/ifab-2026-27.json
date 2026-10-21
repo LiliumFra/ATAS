@@ -1,0 +1,81 @@
+{
+  "id": "ifab-2026-27-reference",
+  "version": "1.0.0",
+  "effectiveFrom": "2026-07-01",
+  "description": "Reference operational policy derived from Law 7 categories. Thresholds are competition-configurable engineering parameters and are not represented as official IFAB timing values.",
+  "nominalPeriodUs": {
+    "FIRST_HALF": 2700000000,
+    "SECOND_HALF": 2700000000,
+    "ET_FIRST": 900000000,
+    "ET_SECOND": 900000000
+  },
+  "policies": {
+    "SUBSTITUTION": { "mode": "FULL", "graceUs": 0, "description": "Confirmed substitution delay" },
+    "INJURY": {
+      "mode": "FULL",
+      "graceUs": 0,
+      "description": "Assessment or treatment of an injured player"
+    },
+    "PLAYER_REMOVAL": {
+      "mode": "FULL",
+      "graceUs": 0,
+      "description": "Removal of an injured player"
+    },
+    "TIME_WASTING": {
+      "mode": "MANUAL",
+      "graceUs": 0,
+      "description": "Confirmed deliberate time wasting"
+    },
+    "DISCIPLINARY_DELAY": {
+      "mode": "FULL",
+      "graceUs": 0,
+      "description": "Delay caused by disciplinary action"
+    },
+    "MEDICAL_BREAK": {
+      "mode": "FULL",
+      "graceUs": 0,
+      "description": "Competition-authorised medical stoppage"
+    },
+    "VAR_CHECK": { "mode": "FULL", "graceUs": 0, "description": "VAR check delaying restart" },
+    "VAR_REVIEW": { "mode": "FULL", "graceUs": 0, "description": "On-field or VAR review" },
+    "GOAL_CELEBRATION": {
+      "mode": "FULL",
+      "graceUs": 0,
+      "description": "Excess delay after a goal"
+    },
+    "EXTERNAL_INTERFERENCE": {
+      "mode": "FULL",
+      "graceUs": 0,
+      "description": "External interference or significant delay"
+    },
+    "THROW_IN_RESTART": {
+      "mode": "EXCESS",
+      "graceUs": 15000000,
+      "description": "Only time beyond configured normal restart allowance"
+    },
+    "GOAL_KICK_RESTART": {
+      "mode": "EXCESS",
+      "graceUs": 20000000,
+      "description": "Only time beyond configured normal restart allowance"
+    },
+    "FREE_KICK_RESTART": {
+      "mode": "EXCESS",
+      "graceUs": 20000000,
+      "description": "Only time beyond configured normal restart allowance"
+    },
+    "CORNER_RESTART": {
+      "mode": "EXCESS",
+      "graceUs": 20000000,
+      "description": "Only time beyond configured normal restart allowance"
+    },
+    "OTHER_SIGNIFICANT_DELAY": {
+      "mode": "MANUAL",
+      "graceUs": 0,
+      "description": "Other significant delay confirmed by an official"
+    }
+  },
+  "boardPolicy": {
+    "suggestion": "FLOOR_AND_CEIL",
+    "refereeApprovalRequired": true
+  }
+}

@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>ATAS — Consola operativa</title>
+    <link rel="stylesheet" href="/console/styles.css" />
+  </head>
+  <body>
+    <header>
+      <div>
+        <p class="eyebrow">Added Time Assistance System</p>
+        <h1>Consola operativa</h1>
+      </div>
+      <div id="connection" class="status neutral">Sin conexión</div>
+    </header>
+
+    <main>
+      <section class="panel configuration">
+        <h2>Sesión</h2>
+        <label>Token JWT <input id="token" type="password" autocomplete="off" /></label>
+        <label>ID del partido <input id="matchId" placeholder="UUID" autocomplete="off" /></label>
+        <label>
+          Periodo
+          <select id="period">
+            <option value="FIRST_HALF">Primer tiempo</option>
+            <option value="SECOND_HALF" selected>Segundo tiempo</option>
+            <option value="ET_FIRST">Prórroga 1</option>
+            <option value="ET_SECOND">Prórroga 2</option>
+          </select>
+        </label>
+        <label class="diagnostic-control">
+          <span><input id="diagnostic" type="checkbox" /> Modo diagnóstico</span>
+          <input id="clock" value="44:00" pattern="[0-9]+:[0-5][0-9]" disabled />
+        </label>
+        <div class="actions">
+          <button id="connect">Conectar</button>
+          <button id="calculate" class="primary">Actualizar</button>
+        </div>
+        <p class="security-note">
+          El token permanece solo en memoria y se elimina al recargar la página.
+        </p>
+      </section>
+
+      <section class="scoreboard">
+        <article class="metric">
+          <span>Tiempo confirmado</span>
+          <strong id="confirmed">00:00.000</strong>
+        </article>
+        <article class="metric">
+          <span>Pérdida durante añadido</span>
+          <strong id="duringAdded">00:00.000</strong>
+        </article>
+        <article class="metric">
+          <span>Suma bruta de eventos</span>
+          <strong id="rawCompensable">00:00.000</strong>
+        </article>
+        <article class="metric">
+          <span>Solapamiento eliminado</span>
+          <strong id="overlapDeducted">00:00.000</strong>
+        </article>
+        <article class="metric emphasis">
+          <span>Panel sugerido</span>
+          <strong id="board">+0 / +0</strong>
+        </article>
+        <article class="metric">
+          <span>Objetivo exacto</span>
+          <strong id="target">45:00.000</strong>
+        </article>
+        <article class="metric">
+          <span>Tiempo restante</span>
+          <strong id="remaining">00:00.000</strong>
+        </article>
+        <article class="metric">
+          <span>Integridad</span>
+          <strong id="integrity">—</strong>
+          <small id="clockStatus">Sin muestra de reloj</small>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Registro rápido</p>
+            <h2>Nueva interrupción compensable</h2>
+          </div>
+          <small
+            >Las detecciones automáticas deben enviarse como PROPOSED; un oficial confirma.</small
+          >
+        </div>
+        <div class="event-grid">
+          <label>
+            Tipo
+            <select id="eventKind">
+              <option>INJURY</option>
+              <option>SUBSTITUTION</option>
+              <option>VAR_CHECK</option>
+              <option>VAR_REVIEW</option>
+              <option>GOAL_CELEBRATION</option>
+              <option>DISCIPLINARY_DELAY</option>
+              <option>TIME_WASTING</option>
+              <option>EXTERNAL_INTERFERENCE</option>
+            </select>
+          </label>
+          <label>Inicio (mm:ss) <input id="eventStart" value="42:00" /></label>
+          <label>Fin (mm:ss, opcional) <input id="eventEnd" value="42:45" /></label>
+          <label>
+            Estado
+            <select id="eventStatus">
+              <option value="CONFIRMED">Confirmado</option>
+              <option value="PROPOSED">Propuesto</option>
+            </select>
+          </label>
+          <button id="addEvent" class="primary">Registrar evento</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Explicabilidad</p>
+            <h2>Desglose del cálculo</h2>
+          </div>
+          <small>Los tiempos compartidos no se atribuyen dos veces al total.</small>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Evento</th>
+                <th>Tipo</th>
+                <th>Bruto</th>
+                <th>Exclusivo</th>
+                <th>Compartido</th>
+                <th>Resultado</th>
+              </tr>
+            </thead>
+            <tbody id="explanation"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-heading">
+          <h2>Eventos</h2>
+          <button id="refreshEvents">Actualizar</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Inicio</th>
+                <th>Fin</th>
+                <th>Tipo</th>
+                <th>Estado</th>
+                <th>Rev.</th>
+                <th>Fuente</th>
+              </tr>
+            </thead>
+            <tbody id="events"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="message" class="message" hidden></section>
+
+      <footer class="legal-credit" aria-label="Créditos y licencia">
+        <strong>ATAS — Added Time Assistance System</strong>
+        <span>Creado por José Francisco Bustamante Ocampo.</span>
+        <span>© 2026 José Francisco Bustamante Ocampo y colaboradores de ATAS.</span>
+        <a href="https://github.com/LiliumFra/ATAS/blob/main/LICENSE" target="_blank" rel="noreferrer">Licencia y atribución</a>
+      </footer>
+    </main>
+    <script type="module" src="/console/app.js"></script>
+  </body>
+</html>

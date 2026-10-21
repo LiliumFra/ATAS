@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.18.0
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm audit --omit=dev --audit-level=high
+
+  container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: deploy/Dockerfile
+          push: false
+          tags: atas:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: atas
+          POSTGRES_USER: atas
+          POSTGRES_PASSWORD: atas
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U atas -d atas"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgres://atas:atas@127.0.0.1:5432/atas
+      AUTH_DISABLED: 'true'
+      CORS_ORIGINS: http://127.0.0.1:8080
+      RULESET_EXPECTED_SHA256: 8278696f39216a4717719a76a7f72b318332d47ccf37e042fc11dcc5f9dd28b3
+      PUBLIC_CONSOLE: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.18.0
+          cache: npm
+      - run: npm ci
+      - run: npm run db:migrate
+      - run: npm run build
+      - name: Run API integration smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm start > /tmp/atas-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8080/health/ready >/dev/null; then
+              break
+            fi
+            if ! kill -0 "$server_pid" 2>/dev/null; then
+              cat /tmp/atas-server.log
+              exit 1
+            fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:8080/health/ready >/dev/null || {
+            cat /tmp/atas-server.log
+            exit 1
+          }
+          npm run test:smoke

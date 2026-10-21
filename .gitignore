@@ -1,0 +1,11 @@
+node_modules/
+dist/
+coverage/
+.env
+*.log
+.DS_Store
+.vscode/
+.idea/
+*.pem
+*.key
+atas-data/

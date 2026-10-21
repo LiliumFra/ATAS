@@ -1,0 +1,17 @@
+{$ATAS_DOMAIN} {
+  encode zstd gzip
+
+  @private path /metrics
+  respond @private 404
+
+  reverse_proxy app:8080
+
+  header {
+    Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    X-Content-Type-Options "nosniff"
+    Referrer-Policy "no-referrer"
+    Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    X-Frame-Options "DENY"
+    -Server
+  }
+}

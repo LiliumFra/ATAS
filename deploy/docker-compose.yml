@@ -1,0 +1,149 @@
+name: atas
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: atas
+      POSTGRES_USER: atas
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks: [backend]
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U atas -d atas']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    security_opt:
+      - no-new-privileges:true
+
+  app:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 8080
+      LOG_LEVEL: info
+      DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL in .env; URL-encode credentials}
+      DATABASE_POOL_MAX: 20
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      JWT_ISSUER: ${JWT_ISSUER:-atas.local}
+      JWT_AUDIENCE: ${JWT_AUDIENCE:-atas-api}
+      JWT_REQUIRE_MATCH_SCOPE: ${JWT_REQUIRE_MATCH_SCOPE:-true}
+      AUDIT_HMAC_SECRET: ${AUDIT_HMAC_SECRET:?set AUDIT_HMAC_SECRET in .env}
+      AUTH_DISABLED: 'false'
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080}
+      TRUST_PROXY: 'true'
+      RATE_LIMIT_MAX: 300
+      RATE_LIMIT_WINDOW: 1 minute
+      CLOCK_RATE_LIMIT_MAX: ${CLOCK_RATE_LIMIT_MAX:-6000}
+      BODY_LIMIT_BYTES: 1048576
+      RULESET_PATH: rulesets/ifab-2026-27.json
+      RULESET_EXPECTED_SHA256: 8278696f39216a4717719a76a7f72b318332d47ccf37e042fc11dcc5f9dd28b3
+      PRIMARY_CLOCK_SOURCE: ${PRIMARY_CLOCK_SOURCE:?set PRIMARY_CLOCK_SOURCE in .env}
+      CLOCK_SOURCE_SUBJECTS: ${CLOCK_SOURCE_SUBJECTS:?set CLOCK_SOURCE_SUBJECTS in .env}
+      CLOCK_MAX_SAMPLE_AGE_MS: ${CLOCK_MAX_SAMPLE_AGE_MS:-2000}
+      CLOCK_FUTURE_TOLERANCE_US: ${CLOCK_FUTURE_TOLERANCE_US:-2000000}
+      CLOCK_MAX_ADVANCE_SKEW_US: ${CLOCK_MAX_ADVANCE_SKEW_US:-2000000}
+      CLOCK_MINIMUM_FRESH_SOURCES: ${CLOCK_MINIMUM_FRESH_SOURCES:-2}
+      CLOCK_MAX_SOURCE_DRIFT_US: ${CLOCK_MAX_SOURCE_DRIFT_US:-100000}
+      CLOCK_MAX_WALL_DRIFT_US: ${CLOCK_MAX_WALL_DRIFT_US:-2000000}
+      OUTBOX_RETENTION_DAYS: ${OUTBOX_RETENTION_DAYS:-30}
+      OUTBOX_CLEANUP_INTERVAL_MS: ${OUTBOX_CLEANUP_INTERVAL_MS:-3600000}
+      OUTBOX_CLEANUP_BATCH_SIZE: ${OUTBOX_CLEANUP_BATCH_SIZE:-10000}
+      REALTIME_LISTENER_HEARTBEAT_MS: ${REALTIME_LISTENER_HEARTBEAT_MS:-5000}
+      REALTIME_LISTENER_MAX_STALE_MS: ${REALTIME_LISTENER_MAX_STALE_MS:-15000}
+      SHUTDOWN_TIMEOUT_MS: ${SHUTDOWN_TIMEOUT_MS:-15000}
+      PUBLIC_CONSOLE: 'true'
+      RUN_MIGRATIONS: 'true'
+    expose: ['8080']
+    networks: [backend]
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:8080/health/ready').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
+
+  edge:
+    image: caddy:2.11.4-alpine
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      ATAS_DOMAIN: ${ATAS_DOMAIN:-:8080}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    ports:
+      - '${ATAS_PORT:-8080}:8080'
+    networks: [backend, edge]
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+
+  prometheus:
+    image: prom/prometheus:v3.6.0
+    profiles: [observability]
+    restart: unless-stopped
+    command: ['--config.file=/etc/prometheus/prometheus.yml', '--storage.tsdb.path=/prometheus']
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks: [backend]
+    security_opt:
+      - no-new-privileges:true
+
+  grafana:
+    image: grafana/grafana:12.1.0
+    profiles: [observability]
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?set GRAFANA_ADMIN_PASSWORD in .env}
+      GF_USERS_ALLOW_SIGN_UP: 'false'
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - '${GRAFANA_PORT:-3000}:3000'
+    networks: [backend, edge]
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  backend:
+    internal: true
+  edge: {}
+
+volumes:
+  postgres_data: {}
+  prometheus_data: {}
+  grafana_data: {}
+  caddy_data: {}
+  caddy_config: {}

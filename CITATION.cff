@@ -1,0 +1,11 @@
+cff-version: 1.3.0
+message: If you use, deploy, redistribute, or derive from this software, preserve the mandatory attribution in LICENSE and NOTICE and cite it using this metadata.
+title: ATAS — Added Time Assistance System
+type: software
+authors:
+  - family-names: Bustamante Ocampo
+    given-names: José Francisco
+version: 1.3.0
+date-released: 2026-10-21
+license: other
+repository-code: https://github.com/LiliumFra/ATAS
